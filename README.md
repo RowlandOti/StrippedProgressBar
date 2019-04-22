@@ -136,9 +136,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-Calling `keyboard.registerEditText()` enables the specific `EditText` to use the custom keyboard. The first argument determines the type of keypad that will be used. Currently the options supported are `KokoKeyboardView.INPUT_TYPE_QWERTY` and `KokoKeyboardView.INPUT_TYPE_QWERTY_NUM `.
-We have various key types like `SquareKeyView` for normal `char` entry and `RectangularKeyView` to handle special actions.
-
+You only need to call `pb_progress_striped.progress = values[0]!!` on `Java/Kotlin` side to be able to update the progress on the ProgressBar.
 ### Coming Soon
 
 - Different Stripped ProgressBars
