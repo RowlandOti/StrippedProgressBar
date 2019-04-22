@@ -1,4 +1,4 @@
-package com.rowland.strippedprogressbar.attrs
+package com.rowland.strippedprogressbar.api.attrs
 
 import android.content.Context
 
@@ -98,6 +98,6 @@ interface StrippedBrand : Serializable {
 
     companion object {
 
-        val KEY = "BootstrapBrand"
+        val KEY = "StrippedBrand"
     }
 }

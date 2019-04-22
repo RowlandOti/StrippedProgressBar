@@ -23,18 +23,25 @@ import android.view.ViewParent;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 
-import com.rowland.strippedprogressbar.attrs.StrippedBrand;
+import com.rowland.strippedprogressbar.api.attrs.StrippedBrand;
+import com.rowland.strippedprogressbar.api.defaults.DefaultStrippedBrand;
+import com.rowland.strippedprogressbar.api.defaults.DefaultStrippedSize;
+import com.rowland.strippedprogressbar.api.traits.ProgressView;
+import com.rowland.strippedprogressbar.api.traits.RoundableView;
+import com.rowland.strippedprogressbar.api.traits.StrippedBrandView;
+import com.rowland.strippedprogressbar.api.traits.StrippedSizeView;
+import com.rowland.strippedprogressbar.utils.ColorUtils;
 import com.rowland.strippedprogressbar.utils.DimenUtils;
 
 import java.io.Serializable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
+
 
 import static android.graphics.Bitmap.Config.ARGB_8888;
 
-public class StrippedProgressBar extends View implements ProgressView, Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
+public class StrippedProgressBar extends View implements ProgressView, StrippedBrandView, StrippedSizeView, RoundableView, Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
     private static final String TAG = StrippedProgressBar.class.getSimpleName();
 
     private static final long UPDATE_ANIM_MS = 300;
@@ -50,6 +57,7 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     private int drawnProgress;
 
     private int maxProgress;
+    private int lineSpacing;
 
     private boolean striped;
     private boolean animated;
@@ -61,13 +69,13 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
 
     private ValueAnimator progressAnimator;
     private Paint tilePaint;
-    private final float baselineHeight = DimenUtils.pixelsFromDpResource(getContext(), R.dimen.bootstrap_progress_bar_height);
+    private final float baselineHeight = DimenUtils.Companion.pixelsFromDpResource(getContext(), R.dimen.stripped_progress_bar_height);
 
     private StrippedBrand bootstrapBrand;
 
     private Canvas progressCanvas;
     private Bitmap progressBitmap;
-    private Bitmap stripeTile;
+    //private Bitmap stripeTile;
 
     private float bootstrapSize;
     private boolean showPercentage;
@@ -102,37 +110,38 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
         textPaint = new Paint();
         textPaint.setStyle(Paint.Style.FILL);
         textPaint.setAntiAlias(true);
-        textPaint.setColor(ColorUtils.resolveColor(android.R.color.black, getContext()));
-        textPaint.setTextSize(DimenUtils.pixelsFromSpResource(getContext(), R.dimen.bootstrap_progress_bar_default_font_size));
+        textPaint.setColor(ColorUtils.Companion.resolveColor(android.R.color.black, getContext()));
+        textPaint.setTextSize(DimenUtils.Companion.pixelsFromSpResource(getContext(), R.dimen.stripped_progress_bar_default_font_size));
 
         bgPaint = new Paint();
         bgPaint.setStyle(Paint.Style.FILL);
-        bgPaint.setColor(ColorUtils.resolveColor(R.color.bootstrap_gray_light, getContext()));
+        bgPaint.setColor(ColorUtils.Companion.resolveColor(R.color.stripped_gray_light, getContext()));
 
         // get attributes
-        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.BootstrapProgressBar);
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.StrippedProgressBar);
 
         try {
-            this.animated = a.getBoolean(R.styleable.BootstrapProgressBar_animated, false);
-            this.rounded = a.getBoolean(R.styleable.BootstrapProgressBar_roundedCorners, false);
-            this.striped = a.getBoolean(R.styleable.BootstrapProgressBar_striped, false);
-            this.showPercentage = a.getBoolean(R.styleable.BootstrapProgressBar_bootstrapshowPercentage, false);
-            this.userProgress = a.getInt(R.styleable.BootstrapProgressBar_bootstrapProgress, 0);
-            this.maxProgress = a.getInt(R.styleable.BootstrapProgressBar_bootstrapMaxProgress, 100);
+            this.animated = a.getBoolean(R.styleable.StrippedProgressBar_pAnimated, false);
+            this.rounded = a.getBoolean(R.styleable.StrippedProgressBar_pRoundedCorners, false);
+            this.striped = a.getBoolean(R.styleable.StrippedProgressBar_pStriped, false);
+            this.showPercentage = a.getBoolean(R.styleable.StrippedProgressBar_pShowPercentage, false);
+            this.userProgress = a.getInt(R.styleable.StrippedProgressBar_pProgress, 0);
+            this.maxProgress = a.getInt(R.styleable.StrippedProgressBar_pMaxProgress, 100);
+            this.lineSpacing = a.getDimensionPixelSize(R.styleable.StrippedProgressBar_pLineSpacing, 80);
 
-            int typeOrdinal = a.getInt(R.styleable.BootstrapProgressBar_bootstrapBrand, -1);
-            int sizeOrdinal = a.getInt(R.styleable.BootstrapProgressBar_bootstrapSize, -1);
+            int typeOrdinal = a.getInt(R.styleable.StrippedProgressBar_pBrand, -1);
+            int sizeOrdinal = a.getInt(R.styleable.StrippedProgressBar_pSize, -1);
 
-            this.bootstrapSize = DefaultBootstrapSize.fromAttributeValue(sizeOrdinal).scaleFactor();
-            this.bootstrapBrand = DefaultBootstrapBrand.fromAttributeValue(typeOrdinal);
+            this.bootstrapSize = DefaultStrippedSize.Companion.fromAttributeValue(sizeOrdinal).scaleFactor();
+            this.bootstrapBrand = DefaultStrippedBrand.Companion.fromAttributeValue(typeOrdinal);
             this.drawnProgress = userProgress;
         } finally {
             a.recycle();
         }
 
         textPaint.setColor(bootstrapBrand.defaultTextColor(getContext()));
-        textPaint.setTextSize((DimenUtils.pixelsFromSpResource(getContext(), R.dimen.bootstrap_button_default_font_size)) * this.bootstrapSize);
-        updateBootstrapState();
+        textPaint.setTextSize((DimenUtils.Companion.pixelsFromSpResource(getContext(), R.dimen.stripped_button_default_font_size)) * this.bootstrapSize);
+        updateStrippedState();
         setProgress(this.userProgress);
         setMaxProgress(this.maxProgress);
     }
@@ -142,12 +151,12 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
         Bundle bundle = new Bundle();
         bundle.putParcelable(TAG, super.onSaveInstanceState());
 
-        bundle.putInt(Companion.getKEY_USER_PROGRESS(), userProgress);
-        bundle.putInt(Companion.getKEY_DRAWN_PROGRESS(), drawnProgress);
-        bundle.putBoolean(Companion.getKEY_STRIPED(), striped);
-        bundle.putBoolean(Companion.getKEY_ANIMATED(), animated);
-        bundle.putBoolean(RoundableView.KEY, rounded);
-        bundle.putFloat(BootstrapSizeView.KEY, bootstrapSize);
+        bundle.putInt(ProgressView.Companion.getKEY_USER_PROGRESS(), userProgress);
+        bundle.putInt(ProgressView.Companion.getKEY_DRAWN_PROGRESS(), drawnProgress);
+        bundle.putBoolean(ProgressView.Companion.getKEY_STRIPED(), striped);
+        bundle.putBoolean(ProgressView.Companion.getKEY_ANIMATED(), animated);
+        bundle.putBoolean(RoundableView.Companion.getKEY(), rounded);
+        bundle.putFloat(StrippedSizeView.Companion.getKEY(), bootstrapSize);
         bundle.putSerializable(StrippedBrand.Companion.getKEY(), bootstrapBrand);
         return bundle;
     }
@@ -163,17 +172,17 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
                 bootstrapBrand = (StrippedBrand) brand;
             }
 
-            this.userProgress = bundle.getInt(Companion.getKEY_USER_PROGRESS());
-            this.drawnProgress = bundle.getInt(Companion.getKEY_DRAWN_PROGRESS());
-            this.striped = bundle.getBoolean(Companion.getKEY_STRIPED());
-            this.animated = bundle.getBoolean(Companion.getKEY_ANIMATED());
-            this.rounded = bundle.getBoolean(RoundableView.KEY);
-            this.bootstrapSize = bundle.getFloat(BootstrapSizeView.KEY);
+            this.userProgress = bundle.getInt(ProgressView.Companion.getKEY_USER_PROGRESS());
+            this.drawnProgress = bundle.getInt(ProgressView.Companion.getKEY_DRAWN_PROGRESS());
+            this.striped = bundle.getBoolean(ProgressView.Companion.getKEY_STRIPED());
+            this.animated = bundle.getBoolean(ProgressView.Companion.getKEY_ANIMATED());
+            this.rounded = bundle.getBoolean(RoundableView.Companion.getKEY());
+            this.bootstrapSize = bundle.getFloat(StrippedSizeView.Companion.getKEY());
 
             state = bundle.getParcelable(TAG);
         }
         super.onRestoreInstanceState(state);
-        updateBootstrapState();
+        updateStrippedState();
         setProgress(userProgress);
     }
 
@@ -286,10 +295,6 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        if (h != oldh) {
-            stripeTile = null; // dereference cached bitmap
-        }
-
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -313,26 +318,16 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
         float ratio = (drawnProgress / (float) maxProgress);
         int lineEnd = (int) (w * ratio);
 
-        float offset = 0;
-        float offsetFactor = (System.currentTimeMillis() % STRIPE_CYCLE_MS) / (float) STRIPE_CYCLE_MS;
+        // draw a filled bar
+        progressCanvas.drawRect(0, 0, lineEnd, h, progressPaint);
 
-        if (striped && animated) { // determine offset for current animation frame of progress bar
-            offset = (h * 2) * offsetFactor;
-        }
-
-        if (striped) { // draw a regular striped bar
-            if (stripeTile == null) {
-                stripeTile = createTile(h, stripePaint, progressPaint);
+        if (striped) {
+            // draw a regular striped bar
+            int start = - lineEnd/2;
+            while (start < lineEnd) {
+                progressCanvas.drawLine(start, 0, start + lineSpacing, h, tilePaint);
+                start += lineSpacing / 4;
             }
-
-            float start = 0 - offset;
-
-            while (start < lineEnd) { // FIXME
-                progressCanvas.drawBitmap(stripeTile, start, 0, tilePaint);
-                start += stripeTile.getWidth();
-            }
-        } else { // draw a filled bar
-            progressCanvas.drawRect(0, 0, lineEnd, h, progressPaint);
         }
 
         progressCanvas.drawRect(lineEnd, 0, w, h, bgPaint); // draw bg
@@ -353,41 +348,6 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     }
 
     /**
-     * Creates a Bitmap which is a tile of the progress bar background
-     *
-     * @param h the view height
-     * @return a bitmap of the progress bar background
-     */
-    private static Bitmap createTile(float h, Paint stripePaint, Paint progressPaint) {
-        Bitmap bm = Bitmap.createBitmap((int) h * 2, (int) h, ARGB_8888);
-        Canvas tile = new Canvas(bm);
-
-        float x = 0;
-        Path path = new Path();
-
-        path.moveTo(x, 0);
-        path.lineTo(x, h);
-        path.lineTo(h, h);
-        tile.drawPath(path, stripePaint); // draw striped triangle
-
-        path.reset();
-        path.moveTo(x, 0);
-        path.lineTo(x + h, h);
-        path.lineTo(x + (h * 2), h);
-        path.lineTo(x + h, 0);
-        tile.drawPath(path, progressPaint); // draw progress parallelogram
-
-        x += h;
-        path.reset();
-        path.moveTo(x, 0);
-        path.lineTo(x + h, 0);
-        path.lineTo(x + h, h);
-        tile.drawPath(path, stripePaint); // draw striped triangle (completing tile)
-
-        return bm;
-    }
-
-    /**
      * Creates a rounded bitmap with transparent corners, from a square bitmap.
      * See <a href="http://stackoverflow.com/questions/4028270">StackOverflow</a>
      *
@@ -403,9 +363,6 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
 
         final Paint paint = new Paint();
         final Rect frame = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-
-//        final Rect frameLeft = new Rect(0, 0, bitmap.getWidth() /2, bitmap.getHeight());
-//        final Rect frameRight = new Rect(bitmap.getWidth() /2, bitmap.getHeight(), bitmap.getWidth(), bitmap.getHeight());
 
         final Rect leftRect = new Rect(0, 0, bitmap.getWidth() / 2, bitmap.getHeight());
         final Rect rightRect = new Rect(bitmap.getWidth() / 2, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -432,7 +389,7 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
         return roundedBitmap;
     }
 
-    private void updateBootstrapState() {
+    private void updateStrippedState() {
         int color = bootstrapBrand.defaultFill(getContext());
         progressPaint.setColor(color);
         stripePaint.setColor(getStripeColor(color));
@@ -441,7 +398,6 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     }
 
     private void invalidateDrawCache() {
-        stripeTile = null;
         progressBitmap = null;
         progressCanvas = null;
     }
@@ -454,7 +410,7 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     @SuppressLint("DefaultLocale")
     @Override
     public void setProgress(int progress) {
-        if (getParent() instanceof BootstrapProgressBarGroup) {
+        if (getParent() instanceof StrippedProgressBarGroup) {
             this.userProgress = 0;
             setMaxProgress(progress);
         } else {
@@ -475,8 +431,8 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
 
         ViewParent parent = getParent();
         if (parent != null) {
-            if (parent instanceof BootstrapProgressBarGroup) {
-                BootstrapProgressBarGroup parentGroup = (BootstrapProgressBarGroup) parent;
+            if (parent instanceof StrippedProgressBarGroup) {
+                StrippedProgressBarGroup parentGroup = (StrippedProgressBarGroup) parent;
                 parentGroup.onProgressChanged(this);
             }
         }
@@ -512,22 +468,22 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     }
 
     @Override
-    public void setBootstrapBrand(@NonNull StrippedBrand bootstrapBrand) {
+    public void setStrippedBrand(@NonNull StrippedBrand bootstrapBrand) {
         this.bootstrapBrand = bootstrapBrand;
         textPaint.setColor(bootstrapBrand.defaultTextColor(getContext()));
-        updateBootstrapState();
+        updateStrippedState();
     }
 
     @NonNull
     @Override
-    public StrippedBrand getBootstrapBrand() {
+    public StrippedBrand getStrippedBrand() {
         return bootstrapBrand;
     }
 
     @Override
     public void setRounded(boolean rounded) {
         this.rounded = rounded;
-        updateBootstrapState();
+        updateStrippedState();
     }
 
     @Override
@@ -536,35 +492,29 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
     }
 
     @Override
-    public float getBootstrapSize() {
+    public float getStrippedSize() {
         return bootstrapSize;
     }
 
     @Override
-    public void setBootstrapSize(float bootstrapSize) {
+    public void setStrippedSize(float bootstrapSize) {
         this.bootstrapSize = bootstrapSize;
-        textPaint.setTextSize((DimenUtils.pixelsFromSpResource(getContext(), R.dimen.bootstrap_progress_bar_default_font_size)) * this.bootstrapSize);
+        textPaint.setTextSize((DimenUtils.Companion.pixelsFromSpResource(getContext(), R.dimen.stripped_progress_bar_default_font_size)) * this.bootstrapSize);
         requestLayout();
-        updateBootstrapState();
+        updateStrippedState();
     }
 
     @Override
-    public void setBootstrapSize(DefaultBootstrapSize bootstrapSize) {
-        setBootstrapSize(bootstrapSize.scaleFactor());
+    public void setStrippedSize(DefaultStrippedSize bootstrapSize) {
+        setStrippedSize(bootstrapSize.scaleFactor());
     }
 
-    /**
-     * @return int, the max progress.
-     */
+    @Override
     public int getMaxProgress() {
         return maxProgress;
     }
 
-    /**
-     * Used for settings the maxprogress. Also check if currentProgress is smaller than newMaxProgress.
-     *
-     * @param newMaxProgress the maxProgress value
-     */
+    @Override
     public void setMaxProgress(int newMaxProgress) {
         if (getProgress() <= newMaxProgress) {
             maxProgress = newMaxProgress;
@@ -573,7 +523,7 @@ public class StrippedProgressBar extends View implements ProgressView, Animator.
                     String.format("MaxProgress cant be smaller than the current progress %d<%d", getProgress(), newMaxProgress));
         }
         invalidate();
-        BootstrapProgressBarGroup parent = (BootstrapProgressBarGroup) getParent();
+        StrippedProgressBarGroup parent = (StrippedProgressBarGroup) getParent();
     }
 
     void setCornerRounding(boolean left, boolean right) {

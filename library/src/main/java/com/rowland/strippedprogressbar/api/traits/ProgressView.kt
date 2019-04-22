@@ -1,4 +1,4 @@
-package com.rowland.strippedprogressbar
+package com.rowland.strippedprogressbar.api.traits
 
 /*Views which implement this interface visually display ongoing progress to users*/
 interface ProgressView {

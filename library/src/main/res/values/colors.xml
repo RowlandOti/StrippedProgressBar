@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="stripped_brand_primary" >#606060</color>
+    <color name="stripped_brand_secondary_fill" >#002fa8</color>
+    <color name="stripped_brand_secondary_text" >@color/colorPrimaryDark</color>
+    <color name="stripped_gray_light" >#606060</color>
+</resources>
