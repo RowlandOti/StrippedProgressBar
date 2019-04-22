@@ -46,7 +46,6 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
     private static final long UPDATE_ANIM_MS = 300;
     private static final int STRIPE_ALPHA = 150;
-    private static final long STRIPE_CYCLE_MS = 1500;
 
     private Paint progressPaint;
     private Paint stripePaint;
