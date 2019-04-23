@@ -39,6 +39,7 @@ deploy:
   api_key:
     secure: rrKKGCGgY2YNC6+7RNMBttH9JZWEzDdcGTLVcB3koGaj/VbNn2uU8KGgns4uUvZ+CvKmf96CdkVApmvRXSOB5EOkO0HW2BwJMoBAdB5C2eRNiN1TpxykxCUjfgp/IVp6l1//M8cwXUXuQrWS6/kea65GULnmc2Hss+dF0DNl7K4c+9Lo70OKkH0qTsGxwZU0iULfWp7aZY6cR//R3wLq+q76tWAIFwnwcZsK6nBlx1U35j2CW9YVy7aq+5iMQYtAdr5pHzFXU41fpE6/vDuTbM+/HTEHosJFISreurkO8Zz0lIeEm5128K8dPQQ6khBAY+AwWnJ9COQ6zZorG6txVveKHO3vQXT3oAzM8NQJH+hAIjJ0ZX58XhwSGhtKLKChk/WshQUr5AWMvEX6Z0iLy1tb7M7zJ9wBf76QzZuQhCjlEj1+hmayI5ly9X1Ln4NZUcDBGGOuPIUQ/x/ocoUK/tTohNmHK1zZQtkrFO9hiibvG4zR+mF3KI74l/64C4RJmdKM6D6q9xGljWav0PHgp4Bc0y4XKFn9R/5j1EP7xlJ6PhEkvlhrBOFYdqpA/th47w5vE/CPtrVfwIrSIL+aH489LDiWMAQBIju/rxDf5YuMiLhssI54TRXF/wWONs0Qkubf2aZO7RULhKaD4VRDxBXdE6VsiOA1/JowtsvafNc=
   file: sample/build/outputs/apk/debug/app-debug.apk
+  skip_cleanup: true
   on:
     repo: RowlandOti/StrippedProgressBar
     tags: true
