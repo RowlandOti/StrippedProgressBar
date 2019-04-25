@@ -74,7 +74,6 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
     private Canvas progressCanvas;
     private Bitmap progressBitmap;
-    //private Bitmap stripeTile;
 
     private float bootstrapSize;
     private boolean showPercentage;
@@ -522,7 +521,7 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
                     String.format("MaxProgress cant be smaller than the current progress %d<%d", getProgress(), newMaxProgress));
         }
         invalidate();
-        StrippedProgressBarGroup parent = (StrippedProgressBarGroup) getParent();
+        //StrippedProgressBarGroup parent = (StrippedProgressBarGroup) getParent();
     }
 
     void setCornerRounding(boolean left, boolean right) {
