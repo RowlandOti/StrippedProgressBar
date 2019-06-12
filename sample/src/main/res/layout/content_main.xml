@@ -21,7 +21,8 @@
         app:pLineSpacing="80dp"
         app:pProgress="0"
         app:pStriped="true"
-        app:pShowPercentage="true" />
+      app:pProgressBgColor="@color/stripped_window_gray_light"
+      app:pShowPercentage="true"/>
 
     <TextView
         android:id="@+id/tv_progress_striped"

@@ -8,4 +8,5 @@
     <color name="stripped_brand_secondary_fill" >#002fa8</color>
     <color name="stripped_brand_secondary_text" >@color/colorPrimaryDark</color>
     <color name="stripped_gray_light" >#606060</color>
+    <color name="stripped_window_gray_light">#d8d8d8</color>
 </resources>

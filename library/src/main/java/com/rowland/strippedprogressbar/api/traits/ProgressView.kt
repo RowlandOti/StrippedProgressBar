@@ -46,11 +46,22 @@ interface ProgressView {
      */
     var maxProgress: Int
 
+    /**
+     * @return int progressBgColor. Returns the progressBgColor value
+     */
+    /**
+     * Used for settings the progressBgColor.
+     *
+     * @param progressBgColor the progressBgColor value
+     */
+    var progressBgColor: Int
+
     companion object {
 
         val KEY_USER_PROGRESS = " com.rowland.strippedprogressbar.api.view.KEY_USER_PROGRESS"
         val KEY_DRAWN_PROGRESS = " com.rowland.strippedprogressbar.api.view.KEY_DRAWN_PROGRESS"
         val KEY_STRIPED = " com.rowland.strippedprogressbar.api.view.KEY_STRIPED"
         val KEY_ANIMATED = " com.rowland.strippedprogressbar.api.view.KEY_ANIMATED"
+        val KEY_PROGRESS_BG = " com.rowland.strippedprogressbar.api.view.KEY_PROGRESS_BG"
     }
 }

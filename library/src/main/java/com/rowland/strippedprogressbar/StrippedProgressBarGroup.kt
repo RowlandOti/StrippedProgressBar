@@ -1,13 +1,10 @@
 package com.rowland.strippedprogressbar
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.util.TypedValue
-import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-
 import com.rowland.strippedprogressbar.api.traits.ProgressView
 import com.rowland.strippedprogressbar.api.traits.RoundableView
 
@@ -18,7 +15,7 @@ import com.rowland.strippedprogressbar.api.traits.RoundableView
  * Each child will have there weight and max progress set to there progress. An empty progressbar emptyProgressBar will then be added to the end of layout if the bar is not full.
  */
 class StrippedProgressBarGroup : StrippedGroup, ProgressView, RoundableView {
-	
+
 	private var cumulativeProgress: Int = 0
 	private val emptyProgressBar = StrippedProgressBar(context)
 	private var sizeOrdinal: Int = 0
@@ -38,6 +35,12 @@ class StrippedProgressBarGroup : StrippedGroup, ProgressView, RoundableView {
 				retrieveChild(i).isStriped = striped
 			}
 		}
+
+    override var progressBgColor: Int
+        get() = progressBgColor
+        set(value) {
+            this.progressBgColor = value
+        }
 	
 	
 	/**
@@ -51,9 +54,9 @@ class StrippedProgressBarGroup : StrippedGroup, ProgressView, RoundableView {
 	 */
 	override var maxProgress: Int
 		get() = maxProgress
-		set(maxProgress) {
-			checkCumulativeSmallerThanMax(maxProgress, cumulativeProgress)
-			this.maxProgress = maxProgress
+        set(value) {
+            checkCumulativeSmallerThanMax(value, cumulativeProgress)
+            this.maxProgress = value
 		}
 	
 	

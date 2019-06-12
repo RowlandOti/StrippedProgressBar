@@ -27,6 +27,7 @@
         <attr name="pStriped" format="boolean"/>
         <attr name="pAnimated" format="boolean"/>
         <attr name="pProgress" format="integer"/>
+        <attr format="color" name="pProgressBgColor"/>
         <attr name="pLineSpacing" format="dimension"/>
         <attr name="pMaxProgress" format="integer"/>
         <attr name="pShowPercentage" format="boolean"/>

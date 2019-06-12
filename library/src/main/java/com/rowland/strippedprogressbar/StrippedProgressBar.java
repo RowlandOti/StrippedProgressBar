@@ -1,6 +1,8 @@
 package com.rowland.strippedprogressbar;
 
 
+import static android.graphics.Bitmap.Config.ARGB_8888;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -10,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -22,7 +23,8 @@ import android.view.View;
 import android.view.ViewParent;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import com.rowland.strippedprogressbar.api.attrs.StrippedBrand;
 import com.rowland.strippedprogressbar.api.defaults.DefaultStrippedBrand;
 import com.rowland.strippedprogressbar.api.defaults.DefaultStrippedSize;
@@ -32,14 +34,7 @@ import com.rowland.strippedprogressbar.api.traits.StrippedBrandView;
 import com.rowland.strippedprogressbar.api.traits.StrippedSizeView;
 import com.rowland.strippedprogressbar.utils.ColorUtils;
 import com.rowland.strippedprogressbar.utils.DimenUtils;
-
 import java.io.Serializable;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-
-
-import static android.graphics.Bitmap.Config.ARGB_8888;
 
 public class StrippedProgressBar extends View implements ProgressView, StrippedBrandView, StrippedSizeView, RoundableView, Animator.AnimatorListener, ValueAnimator.AnimatorUpdateListener {
     private static final String TAG = StrippedProgressBar.class.getSimpleName();
@@ -57,6 +52,7 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
     private int maxProgress;
     private int lineSpacing;
+    private int progressBgColor;
 
     private boolean striped;
     private boolean animated;
@@ -113,7 +109,6 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
         bgPaint = new Paint();
         bgPaint.setStyle(Paint.Style.FILL);
-        bgPaint.setColor(ColorUtils.Companion.resolveColor(R.color.stripped_gray_light, getContext()));
 
         // get attributes
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.StrippedProgressBar);
@@ -126,6 +121,8 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
             this.userProgress = a.getInt(R.styleable.StrippedProgressBar_pProgress, 0);
             this.maxProgress = a.getInt(R.styleable.StrippedProgressBar_pMaxProgress, 100);
             this.lineSpacing = a.getDimensionPixelSize(R.styleable.StrippedProgressBar_pLineSpacing, 80);
+            this.progressBgColor = a.getColor(R.styleable.StrippedProgressBar_pProgressBgColor,
+                ColorUtils.Companion.resolveColor(R.color.stripped_gray_light, getContext()));
 
             int typeOrdinal = a.getInt(R.styleable.StrippedProgressBar_pBrand, -1);
             int sizeOrdinal = a.getInt(R.styleable.StrippedProgressBar_pSize, -1);
@@ -139,6 +136,9 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
         textPaint.setColor(bootstrapBrand.defaultTextColor(getContext()));
         textPaint.setTextSize((DimenUtils.Companion.pixelsFromSpResource(getContext(), R.dimen.stripped_button_default_font_size)) * this.bootstrapSize);
+
+        bgPaint.setColor(this.progressBgColor);
+
         updateStrippedState();
         setProgress(this.userProgress);
         setMaxProgress(this.maxProgress);
@@ -156,6 +156,7 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
         bundle.putBoolean(RoundableView.Companion.getKEY(), rounded);
         bundle.putFloat(StrippedSizeView.Companion.getKEY(), bootstrapSize);
         bundle.putSerializable(StrippedBrand.Companion.getKEY(), bootstrapBrand);
+        bundle.putInt(ProgressView.Companion.getKEY_USER_PROGRESS(), progressBgColor);
         return bundle;
     }
 
@@ -176,6 +177,7 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
             this.animated = bundle.getBoolean(ProgressView.Companion.getKEY_ANIMATED());
             this.rounded = bundle.getBoolean(RoundableView.Companion.getKEY());
             this.bootstrapSize = bundle.getFloat(StrippedSizeView.Companion.getKEY());
+            this.progressBgColor = bundle.getInt(ProgressView.Companion.getKEY_ANIMATED());
 
             state = bundle.getParcelable(TAG);
         }
@@ -535,5 +537,15 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
 
     boolean getCornerRoundingRight() {
         return canRoundRight;
+    }
+
+    @Override
+    public int getProgressBgColor() {
+        return progressBgColor;
+    }
+
+    @Override
+    public void setProgressBgColor(int color) {
+        progressBgColor = color;
     }
 }
