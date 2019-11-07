@@ -145,22 +145,6 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
     }
 
     @Override
-    public Parcelable onSaveInstanceState() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(TAG, super.onSaveInstanceState());
-
-        bundle.putInt(ProgressView.Companion.getKEY_USER_PROGRESS(), userProgress);
-        bundle.putInt(ProgressView.Companion.getKEY_DRAWN_PROGRESS(), drawnProgress);
-        bundle.putBoolean(ProgressView.Companion.getKEY_STRIPED(), striped);
-        bundle.putBoolean(ProgressView.Companion.getKEY_ANIMATED(), animated);
-        bundle.putBoolean(RoundableView.Companion.getKEY(), rounded);
-        bundle.putFloat(StrippedSizeView.Companion.getKEY(), bootstrapSize);
-        bundle.putSerializable(StrippedBrand.Companion.getKEY(), bootstrapBrand);
-        bundle.putInt(ProgressView.Companion.getKEY_USER_PROGRESS(), progressBgColor);
-        return bundle;
-    }
-
-    @Override
     public void onRestoreInstanceState(Parcelable state) {
         if (state instanceof Bundle) {
             Bundle bundle = (Bundle) state;
@@ -177,13 +161,29 @@ public class StrippedProgressBar extends View implements ProgressView, StrippedB
             this.animated = bundle.getBoolean(ProgressView.Companion.getKEY_ANIMATED());
             this.rounded = bundle.getBoolean(RoundableView.Companion.getKEY());
             this.bootstrapSize = bundle.getFloat(StrippedSizeView.Companion.getKEY());
-            this.progressBgColor = bundle.getInt(ProgressView.Companion.getKEY_ANIMATED());
+            this.progressBgColor = bundle.getInt(ProgressView.Companion.getKEY_PROGRESS_BG());
 
             state = bundle.getParcelable(TAG);
         }
         super.onRestoreInstanceState(state);
         updateStrippedState();
         setProgress(userProgress);
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(TAG, super.onSaveInstanceState());
+
+        bundle.putInt(ProgressView.Companion.getKEY_USER_PROGRESS(), userProgress);
+        bundle.putInt(ProgressView.Companion.getKEY_DRAWN_PROGRESS(), drawnProgress);
+        bundle.putBoolean(ProgressView.Companion.getKEY_STRIPED(), striped);
+        bundle.putBoolean(ProgressView.Companion.getKEY_ANIMATED(), animated);
+        bundle.putBoolean(RoundableView.Companion.getKEY(), rounded);
+        bundle.putFloat(StrippedSizeView.Companion.getKEY(), bootstrapSize);
+        bundle.putSerializable(StrippedBrand.Companion.getKEY(), bootstrapBrand);
+        bundle.putInt(ProgressView.Companion.getKEY_PROGRESS_BG(), progressBgColor);
+        return bundle;
     }
 
     private int getStripeColor(@ColorInt int color) {
