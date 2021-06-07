@@ -1,0 +1,31 @@
+apply plugin: 'maven-publish' // Apply this plugin at the top of your library build.gradle
+
+def propFile = file('../.buildsystem/.github-pkg/github.properties')
+if (propFile.exists()) {
+    def props = new Properties()
+    props.load(new FileInputStream(propFile))
+
+    afterEvaluate {
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    groupId props['GROUPID']
+                    artifactId props['ARTIFACTID']
+                    version getVersionName()
+                    from components.release
+                }
+            }
+
+            repositories {
+                maven {
+                    name = "GitHubPackageRegistry"
+                    url = uri("https://maven.pkg.github.com/${props['USER']}/${props['NAME']}")
+                    credentials {
+                        username = props['GA_USER'] ?: System.getenv("GA_USER")
+                        password = props['GA_TOKEN'] ?: System.getenv("GA_TOKEN")
+                    }
+                }
+            }
+        }
+    }
+}
