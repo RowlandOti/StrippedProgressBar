@@ -31,7 +31,7 @@
         <attr name="pLineSpacing" format="dimension"/>
         <attr name="pMaxProgress" format="integer"/>
         <attr name="pShowPercentage" format="boolean"/>
-        <attr name="pRoundedCorners"/>
+        <attr name="pRoundedCorners" format="boolean"/>
         <attr name="pBrand"/>
         <attr name="pSize"/>
     </declare-styleable>
