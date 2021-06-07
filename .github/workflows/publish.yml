@@ -19,6 +19,9 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Grant Permission to Execute
+        run: chmod +x gradlew
+
       - name: Publish library
         env:
           GA_USER: ${{ secrets.GA_USER }}
